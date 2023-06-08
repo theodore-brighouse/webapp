@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <body>
+        <h1 style="text-align: left"><a href="/">logo</a></h1>
+        <form method = post>
+            <fieldset>
+                <legend>Sign-Up</legend>
+                {{ form.hidden_tag() }}
+                <div style = font-size:20px; font-weight:bold; magin-left:150px;>
+                {{ form.email.label }}
+                {{ form.email }}<br>
+                {{ form.password.label }}
+                {{ form.password }}<br>
+                {{ form.confirmPassword.label }}
+                {{ form.confirmPassword }}<br>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                        <li> {{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% endwith %}
+                {{ form.submit }}</div>  
+            </fieldset>
+        </form>
+    </body>

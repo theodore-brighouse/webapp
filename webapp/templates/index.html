@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <body>
+        <h1 style="text-align: left"><a href="/">logo</a></h1>
+        {% if id %}
+            <h2 style= "text-align: right"><a href="/account">account</a>  <a href="/logout">logout</a></h2>
+        {% else %}
+            <h2 style="text-align: right"><a href="/login">login</a>  <a href="/signup">sign-up</a></h2>
+        {% endif %}
+    </body>
