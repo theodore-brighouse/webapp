@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/navbar.css') }}">
+    </head>
+    <body onload="search( '{{ query }}' )">
+        <ul>
+            <li style="float: left;"><a href="/">logo</a></li>
+            {% if id %}
+            <li ><a href="/account">account</a></li> 
+            <li><a href="/logout">logout</a></li>
+            {% else %}
+            <li><a href="/signup">sign-up</a></li>
+            <li><a href="/login">login</a></li>
+            {% endif %}
+            <li>
+                <form id="search-form">
+                <input type="text" id="search-input" placeholder="Search" oninput= "search(this.value)" value = "{{ query }}">
+                </form>
+            </li>
+        </ul>
+        <div id="search-results"></div>
+        <script>
+            function search(str) {
+            var xhttp;
+            if (str.trim() == "") {
+                document.getElementById("search-results").innerHTML = "";
+                var newURL = "browse";
+                window.history.replaceState("", "", newURL);
+                return;
+            }
+            var newURL = "search?query=" + encodeURIComponent(str);
+            window.history.replaceState({ path: newURL }, "", newURL);
+            xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("search-results").innerHTML = this.responseText;
+            }
+            };
+            xhttp.open("POST", "search-results?query=" + str, true);
+            xhttp.send();
+            }
+            </script>
+    </body>

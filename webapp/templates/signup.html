@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/navbar.css') }}">
+    </head>
+    <body>
+        <ul>
+            <li style="float: left;"><a href="/">logo</a></li>
+        </ul>
+        <br><br>
+        <form method = post>
+            <fieldset>
+                <legend>Sign-Up</legend>
+                {{ form.hidden_tag() }}
+                {{ form.email.label }}
+                {{ form.email }}<br>
+                {{ form.password.label }}
+                {{ form.password }}<br>
+                {{ form.confirmPassword.label }}
+                {{ form.confirmPassword }}<br>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                        <li> {{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% endwith %}
+                {{ form.submit }}
+            </fieldset>
+        </form>
+    </body>
