@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head><link rel="stylesheet" href="{{ url_for('static', filename='/navbar.css') }}">
+    <script src="{{ url_for('static', filename='/main.js') }}"></script></head>
+    <body onload="{{ func }}">
+        <ul>
+        <li><a href="/">logo</a></li>
+        <li>
+            <form id="search-form">
+            <input type="text" id="search-input" placeholder="Search" oninput= "search(this.value)" value = "{{ query }}">
+            </form>
+        </li>
+        <li><select id="genre-dropdown" onchange = "genre(this.value)">
+            <option value="0">All</option>
+            <option value="Drama">Drama</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Thriller">Thriller</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Action">Action</option>
+        </select></li>
+        {% if id %}
+            <li style="float: right"><a href="/account">account</a></li> 
+            <li style="float: right"><a href="/logout">logout</a></li>
+            <li style="float: right"><a href="/watchlist">watchlist</a></li>
+        {% else %}
+            <li style="float: right"><a href="/signup">sign up</a></li>
+            <li style="float: right"><a href="/login">login</a></li>
+        {% endif %}
+        </ul>
+        <div id="search-results"></div>
+    </body>
+</html>

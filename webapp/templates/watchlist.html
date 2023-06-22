@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <head><link rel="stylesheet" href="{{ url_for('static', filename='/navbar.css') }}">
+    </head>
+    <body>
+        <ul>
+            <li><a href="/">logo</a></li>
+            <li style="float: right"><a href="/account">account</a></li> 
+            <li style="float: right"><a href="/logout">logout</a></li>
+            <li style="float: right"><a href="/watchlist">watchlist</a></li>
+        </ul>
+
+        {% for film in films %}
+            <div >
+                <a style = "display: block;
+                color: rgb(54, 15, 231);
+                text-align: center;
+                font-size: 20px;
+                float: left;
+                padding: 20px 25px;
+                text-decoration: none;" href ="/{{ film[1] }}">{{ film[1] }}</a>
+            </div>
+        {% endfor %}
+    </body>
+</html>

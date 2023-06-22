@@ -2,8 +2,19 @@
 <html lang="en">
     <body>
         <h1 style="text-align: left"><a href="/">logo</a></h1>
-        <h2 style="text-align: left" font-size="20px"> {{film[0]}}</h2>
-        <p style="text-align: left">Genre: {{film[1]}}</p>
-        <p style="text-align: left">Director: {{film[2]}}</p>
+        <h2 style="text-align: left" font-size="20px"> {{film[1]}}</h2>
+        <p style="text-align: left">Genre: {{film[2]}}</p>
+        <p style="text-align: left">Director: {{film[3]}}</p>
+        {% if id %}
+            {% if onwishlist %}
+                <form method="POST" action="{{ url_for('remove_from_watchlist', film_id = film[0] ) }}">
+                    <button type="submit">Remove from Watchlist</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{{ url_for('add_to_wishlist', film_id = film[0] ) }}">
+                    <button type="submit">Add to Watchlist</button>
+                </form>
+            {% endif %}
+        {% endif %}
     </body>
 </html>

@@ -1,4 +1,4 @@
-<body>
+ <body>
     {% for film in results %}
         <div ><a style = "display: block;
             color: rgb(54, 15, 231);
@@ -6,6 +6,6 @@
             font-size: 20px;
             float: left;
             padding: 20px 25px;
-            text-decoration: none;" href ="/{{ film[0] }}">{{ film[0] }}</a></div>
+            text-decoration: none;" href ="/{{ film[1] }}">{{ film[1] }}</a></div>
     {% endfor %}
 </body>

@@ -1,7 +1,7 @@
-from flask import Flask, render_template, flash, jsonify, request, session, redirect, url_for
-from scripts.forms import LoginForm, SignupForm
+from flask import Flask, render_template, flash, request, session, redirect, url_for
+from static.forms import LoginForm, SignupForm
 from flask_session import Session
-import sqlite3 as sql
+import sqlite3 as sql, difflib, random
 
 DATABASE = "test.db"
 
@@ -16,9 +16,13 @@ def index():
 def browse(): 
     films = get_films() 
     if 'id' in session:
-        return render_template('browse.html', id = session['id'], films = films)
+        return render_template('index.html', id = session['id'], films = films)
     else:
-        return render_template('browse.html', films = films)
+        return render_template('index.html', films = films)
+
+@app.route("/browse-content", methods = ['GET', 'POST'])
+def browse_content():
+    return render_template('browse.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -30,6 +34,7 @@ def login():
         password = form.password.data
         cur.execute("SELECT * FROM users WHERE email = ?", (email,))
         user = cur.fetchone()
+        con.close()
         if user and user[2] == password:
             session['id'] = user[0]
             return redirect('/')
@@ -64,32 +69,110 @@ def logout():
     session.clear()
     return redirect("/")
 
+@app.route("/watchlist")
+def watchlist():
+    if 'id' in session:
+        con = sql.connect(DATABASE)
+        cur = con.cursor()
+        cur.execute("""
+                    SELECT * FROM films 
+                    JOIN watchlist ON watchlist.film_id = films.film_id 
+                    WHERE watchlist.user_id = ?
+                    """, (session['id'],))
+        films = cur.fetchall()
+        return render_template("watchlist.html", films = films)
+    
 @app.route('/<string:title>')
 def film_details(title):
     con = sql.connect(DATABASE)
     cur = con.cursor()
     cur.execute("SELECT * FROM films WHERE title = ?", (title,))
     film = cur.fetchone()
+    film_id = film[0]
+    print(film[0])
+    if 'id' in session:
+        user_id = session['id']
+        cur.execute("""
+                    SELECT * FROM films 
+                    JOIN watchlist ON watchlist.film_id = films.film_id 
+                    JOIN users ON watchlist.user_id = users.user_id 
+                    WHERE users.user_id = ? AND watchlist.film_id = ?
+                    """, (user_id, film_id))
+        if cur.fetchone():
+            return render_template("film_details.html", film = film, id = session['id'], onwishlist = True)
+        con.close()
+        return render_template("film_details.html", film = film, id = session['id'])
+    con.close()
     return render_template("film_details.html", film = film)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    query = request.args.get('query')
-    return render_template("search.html", query = query)
+    query = request.args.get('q')
+    func = 'search(\'' + query + '\')'
+    return render_template("index.html", func = func)
+
+@app.route('/genre', methods=['GET', 'POST'])
+def genre():
+    genre = request.args.get('q')
+    func = 'genre(\'' + genre + '\')'
+    return render_template("index.html", func = func)
     
 @app.route('/search-results', methods=['GET', 'POST'])
 def search_results():
-    query = request.args.get('query')
+    query = request.args.get('q')
     con = sql.connect(DATABASE)
     cur = con.cursor()
-    cur.execute("SELECT * FROM films WHERE title LIKE ? OR genre LIKE ? OR dir LIKE ?", (('%' + query + '%'), ('%' + query + '%'), ('%' + query + '%')))
+    cur.execute("SELECT * FROM films WHERE title LIKE ? OR dir LIKE ?", (('%' + query + '%'), ('%' + query + '%')))
     results = cur.fetchall()
+    con.close()
+    results = sorted(results, key=lambda x: difflib.SequenceMatcher(None, x[1], query).ratio(), reverse=True)
+    return render_template("search_results.html", results = results)
+
+@app.route('/add-to-watchlist', methods=['GET', 'POST'])
+def add_to_wishlist():
+    if 'id' in session:
+        film_id = request.args.get('film_id')
+        con = sql.connect(DATABASE)
+        cur = con.cursor()
+        user_id = session['id']
+        cur.execute("INSERT INTO watchlist(user_id, film_id) VALUES(?, ?)", (user_id, film_id))
+        con.commit()
+        cur.execute("SELECT title FROM films WHERE film_id = ?", (film_id,))
+        title = cur.fetchone()[0]
+        con.close()
+        return redirect(url_for("film_details", title = title))
+    return redirect("/signup")
+
+@app.route('/remove-from-watchlist', methods=['GET', 'POST'])
+def remove_from_watchlist():
+    if 'id' in session:
+        film_id = request.args.get('film_id')
+        con = sql.connect(DATABASE)
+        cur = con.cursor()
+        user_id = session['id']
+        cur.execute("DELETE FROM watchlist WHERE user_id = ? AND film_id = ?", (user_id, film_id))
+        con.commit()
+        cur.execute("SELECT title FROM films WHERE film_id = ?", (film_id,))
+        title = cur.fetchone()[0]
+        con.close()
+        return redirect(url_for("film_details", title = title))
+    return redirect("/signup")  
+
+@app.route('/genre-results', methods=['GET', 'POST'])
+def genre_results():
+    query = request.args.get('q')
+    con = sql.connect(DATABASE)
+    cur = con.cursor()
+    cur.execute("SELECT * FROM films WHERE genre = ?", (query,))
+    results = cur.fetchall()
+    con.close()
+    random.shuffle(results)
     return render_template("search_results.html", results = results)
 
 def get_user(id):
     con = sql.connect(DATABASE)
     cur = con.cursor()
-    cur.execute("SELECT * FROM users WHERE id = ?", (id,))
+    cur.execute("SELECT * FROM users WHERE user_id = ?", (id,))
     user = cur.fetchone()
     con.close()
     return user
@@ -110,6 +193,7 @@ def get_films():
     cur = con.cursor()
     cur.execute("SELECT * FROM films")
     films = cur.fetchall()
+    con.close()
     return films
 
 if __name__ == '__main__':
