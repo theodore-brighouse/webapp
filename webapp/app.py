@@ -1,10 +1,9 @@
 from flask import Flask, render_template, flash, request, session, redirect, url_for
 from static.forms import LoginForm, SignupForm
 from flask_session import Session
-import sqlite3 as sql, difflib, random
+import sqlite3 as sql, difflib, random, requests
 
 DATABASE = "test.db"
-
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -12,13 +11,25 @@ Session(app)
 def index():
     return redirect("/browse")
 
+@app.route("/admin")
+def admin():
+    if 'id' in session and session['id'] == 'admin':
+        return render_template('admin.html') 
+    return redirect("/")
+
+@app.route("/admin/edit-films")
+def edit_films():
+    if 'id' in session and session['id'] == 'admin':
+        return render_template('edit_films.html')
+    return redirect("/")
+
 @app.route("/browse")
 def browse(): 
-    films = get_films() 
+    func = 'browse()'
     if 'id' in session:
-        return render_template('index.html', id = session['id'], films = films)
+        return render_template('index.html', func = func, id = session['id'])
     else:
-        return render_template('index.html', films = films)
+        return render_template('index.html', func = func)
 
 @app.route("/browse-content", methods = ['GET', 'POST'])
 def browse_content():
@@ -32,6 +43,9 @@ def login():
         cur = con.cursor()
         email = form.email.data
         password = form.password.data
+        if password == '1234admin' and email == 'admin@admin.com':
+            session['id'] = 'admin'
+            return redirect('/')
         cur.execute("SELECT * FROM users WHERE email = ?", (email,))
         user = cur.fetchone()
         con.close()
@@ -82,6 +96,15 @@ def watchlist():
         films = cur.fetchall()
         return render_template("watchlist.html", films = films)
     
+def get_vimeo_embed_url(video_id):
+    oembed_url = f"https://vimeo.com/api/oembed.json?url=https://vimeo.com/{video_id}"
+    response = requests.get(oembed_url)
+    if response.ok:
+        video_data = response.json()
+        return video_data["html"]
+    else:
+        return None
+
 @app.route('/<string:title>')
 def film_details(title):
     con = sql.connect(DATABASE)
@@ -89,7 +112,8 @@ def film_details(title):
     cur.execute("SELECT * FROM films WHERE title = ?", (title,))
     film = cur.fetchone()
     film_id = film[0]
-    print(film[0])
+    video_url = get_vimeo_embed_url(film[5])
+    print(video_url)
     if 'id' in session:
         user_id = session['id']
         cur.execute("""
@@ -99,11 +123,11 @@ def film_details(title):
                     WHERE users.user_id = ? AND watchlist.film_id = ?
                     """, (user_id, film_id))
         if cur.fetchone():
-            return render_template("film_details.html", film = film, id = session['id'], onwishlist = True)
+            return render_template("film_details.html", film = film, video_url = video_url, id = session['id'], onwishlist = True)
         con.close()
-        return render_template("film_details.html", film = film, id = session['id'])
+        return render_template("film_details.html", film = film, video_url = video_url, id = session['id'])
     con.close()
-    return render_template("film_details.html", film = film)
+    return render_template("film_details.html", film = film, video_url = video_url)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():

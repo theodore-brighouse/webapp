@@ -1,0 +1,74 @@
+body{
+  font-family: 'Arya', sans-serif;
+  background-color: #4E4C4C;
+  text-align: center;
+  box-sizing: border-box;
+  font-size: 21px;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background-color: #4E4C4C;;
+}
+
+.navLinks li {
+  display: inline-block;
+  padding: 0px 20px;
+}
+
+.navLinks li a {
+  transition: all 0.3s ease 0s;
+}
+
+.navLinks li a:hover {
+  color: #6881b3;
+}
+
+.search-options {
+  flex-grow: 1;
+  margin-top: 9px;
+}
+
+.search-options form {
+  display: inline-block;
+}
+
+.search-options input {
+  float: left;
+  max-width: 500px;
+  padding: 10px;
+  background-color: #DEDEDE;
+  border-color: #424242;
+  border-radius: 50px;
+  font-size: 18px;
+}
+
+.search-options input::placeholder {
+  font-size: 18px;
+}
+
+.logo {
+  flex-grow: 0;
+}
+
+.search-options select {
+  display: inline-block;
+  background-color: #DEDEDE;
+  border-radius: 50px;
+  padding: 10px;
+  height: 45px;
+  margin-top: 10px;
+}
+
+.titleImage{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background-image: url("https: //static1.colliderimages.com/wordpress/wp-content/uploads/2023/03/david-lynch-movies.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5");
+}
