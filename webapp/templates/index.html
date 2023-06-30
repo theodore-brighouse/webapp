@@ -2,46 +2,45 @@
 <html lang = "en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Cinemore</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='/styles.css') }}">
-    <script src="{{ url_for('static', filename='/main.js') }}"></script></head>
+        <script src="{{ url_for('static', filename='/main.js') }}"></script>
+    </head>
     <body onload="{{ func }}">
         <nav>
             <a href="/">
                 <image src="{{ url_for('static', filename='/images/logo.svg') }}" alt="logo" class="logo"></image>
             </a>
-            <div class="search-options">
-                <form id="search">
-                    <input type="text" id="search-input" placeholder="Search" oninput= "search(this.value)">
-                </form>
+            <form id="search">
+                <input type="text" id="search-input" placeholder="Search" oninput= "search(this.value)">
+            </form>
                 <select id="genre-dropdown" onchange = "genre(this.value)">
-                    <option value="0">All</option>
+                    <option value="0">None</option>
                     <option value="Drama">Drama</option>
                     <option value="Comedy">Comedy</option>
                     <option value="Thriller">Thriller</option>
-                    <option value="Fantasy">Fantasy</option>
-                    <option value="Action">Action</option>
+                    <option value="Horror">Horror</option>
+                    <option value="War">War</option>
                 </select>
+            {% if account %}
+            <div class="dropdown">
+                <image class="dropdown-image" src="{{ url_for('static', filename='/images/account.svg') }}">
+                <div class="dropdown-content">
+                    <div style="padding: 8px; display: block; margin-bottom: 10px; text-decoration: underline;">{{ account[1] }}</div>
+                    <a href="/watchlist">Watchlist</a>
+                    <a href="/logout">Logout</a>
+                </div>
             </div>
-            <ul class="navLinks">
-            {% if id %}
-                <li style="float: right">
-                    <a href="/account">account</a>
-                </li> 
-                <li style="float: right">
-                    <a href="/logout">logout</a>
-                </li>
-                <li style="float: right">
-                    <a href="/watchlist">watchlist</a>
-                </li>
             {% else %}
+            <ul class="navLinks">
                 <li style="float: right">
                     <a href="/signup">sign up</a>
                 </li>
                 <li style="float: right">
                     <a href="/login">login</a>
                 </li>
-            {% endif %}
             </ul>
+            {% endif %}
         </nav>
         <div id="search-results"></div>
     </body>

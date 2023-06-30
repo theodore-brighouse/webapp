@@ -1,21 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <title>Cinemore - {{film[1]}}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='/styles.css') }}">
+        <script src="https://player.vimeo.com/api/player.js"></script>
+        <script>
+            var player;
+            function showVideoPlayer() {
+                var container = document.getElementById('video-container');
+                container.style.display = 'block';
+                player = new Vimeo.Player('vimeo-player', {
+                    respondive: true,
+                    title: false,
+                    autoplay: true,
+                    portrait: false,
+                    fullscreen: true,
+                    frameborder: false,
+                    width: '640px',
+                    height: '330px',
+                    id: "{{ film[5] }}",
+                });
+            }
+            function hideVideoPlayer() {
+                player.destroy().then(function() {
+                    // Player instance successfully destroyed
+                    }).catch(function(error) {
+                    console.error('Error destroying player:', error);
+                    });
+                var container = document.getElementById('video-container');
+                container.style.display = 'none';
+            }
+
+        </script>
+    </head>
     <body>
-        <h1 style="text-align: left"><a href="/">logo</a></h1>
-        <h2 style="text-align: left" font-size="20px"> {{film[1]}}</h2>
-        <p style="text-align: left">Genre: {{film[2]}}</p>
-        <p style="text-align: left">Director: {{film[3]}}</p>
-        {% if id %}
-            {% if onwishlist %}
-                <form method="POST" action="{{ url_for('remove_from_watchlist', film_id = film[0] ) }}">
-                    <button type="submit">Remove from Watchlist</button>
-                </form>
+        <header></header>
+        <nav>
+            <a href="/">
+                <image src="{{ url_for('static', filename='/images/logo.svg') }}" alt="logo" class="logo"></image>
+            </a>
+            {% if account %}
+            <div class="dropdown">
+                <image class="dropdown-image" src="{{ url_for('static', filename='/images/account.svg') }}">
+                <div class="dropdown-content">
+                    <div style="padding: 8px; display: block; margin-bottom: 10px; text-decoration: underline;">{{ account[1] }}</div>
+                    <a href="/watchlist">Watchlist</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
             {% else %}
-                <form method="POST" action="{{ url_for('add_to_wishlist', film_id = film[0] ) }}">
-                    <button type="submit">Add to Watchlist</button>
-                </form>
+            <ul class="navLinks">
+                <li style="float: right">
+                    <a href="/signup">sign up</a>
+                </li>
+                <li style="float: right">
+                    <a href="/login">login</a>
+                </li>
+            </ul>
             {% endif %}
-        {% endif %}
-        {{ video_url | safe }}
+        </nav>
+        <div class="image-container">
+            <image class="image-header" src="{{ film[6] }}"></image>
+            <button class="back-button" onclick="history.back()">
+                <image src="{{ url_for('static', filename='/images/back.svg') }}" alt="back"></image>
+            </button>
+            {% if account %}
+            <button id="play-button" onclick="showVideoPlayer()">
+                <image src="{{ url_for('static', filename='/images/playbutton.svg')}}"></image>
+            </button>
+            {% else %}
+            <a href="/login">
+                <button id="play-button">
+                    <image src="{{ url_for('static', filename='/images/playbutton.svg')}}"></image>
+                </button>
+            </a>
+            {% endif %}
+            {% if account %}
+                {% if onwishlist %}
+                    <form method="POST" action="{{ url_for('remove_from_watchlist', film_id = film[0], page = 'film_details' ) }}">
+                        <button class="watchlist-button" type="submit">
+                            <image src="{{ url_for('static', filename='/images/removewatchlist.svg')}}"></image>
+                            <span class="tooltip">Remove from Watchlist</span>
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="{{ url_for('add_to_watchlist', film_id = film[0] ) }}">
+                        <button class="watchlist-button" type="submit">
+                            <image src="{{ url_for('static', filename='/images/addwatchlist.svg')}}"></image>
+                            <span class="tooltip">Add to Watchlist</span>
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="title-container">
+            <div class="title"> {{film[1]}}</div>
+        </div>
+        <div class="separator"></div>
+        <div class="details-container">
+            <div class="description">{{ film[4] }}</div>
+            <div class="details">
+                <div>Genre: {{film[2]}}</div>
+                <div>Director: {{film[3]}}</div>
+                <div>Cast: </div>
+            </div>
+        </div>
+        <div id="video-container">
+            <button onclick="hideVideoPlayer()">
+                <image src="{{ url_for('static', filename='/images/close.svg')}}"></image>
+            </button>
+            <div id="vimeo-player"></div>
+        </div>
     </body>
 </html>

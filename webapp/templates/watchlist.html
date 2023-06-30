@@ -1,26 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <head><link rel="stylesheet" href="{{ url_for('static', filename='/navbar.css') }}">
-    </head>
-    <body>
-        <ul>
-            <li><a href="/">logo</a></li>
-            <li style="float: right"><a href="/account">account</a></li> 
-            <li style="float: right"><a href="/logout">logout</a></li>
-            <li style="float: right"><a href="/watchlist">watchlist</a></li>
-        </ul>
-
-        {% for film in films %}
-            <div>
-                <a style = "display: block;
-                color: rgb(54, 15, 231);
-                text-align: center;
-                font-size: 20px;
-                float: left;
-                padding: 20px 25px;
-                text-decoration: none;" href ="/{{ film[1] }}">{{ film[1] }}</a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles.css') }}">
+</head>
+<body onload="{{ func }}">
+    <header></header>
+    <br></br>
+    <nav>
+        <a href="/">
+            <image src="{{ url_for('static', filename='/images/logo.svg') }}" alt="logo" class="logo"></image>
+        </a>
+        {% if account %}
+        <div class="dropdown">
+            <image class="dropdown-image" src="{{ url_for('static', filename='/images/account.svg') }}">
+            <div class="dropdown-content">
+                <div style="padding: 8px; display: block; margin-bottom: 10px; text-decoration: underline;">{{ account[1] }}</div>
+                <a href="/logout">Logout</a>
             </div>
-        {% endfor %}
-    </body>
-</html>
+        </div>
+        {% else %}
+        <ul class="navLinks">
+            <li style="float: right">
+                <a href="/signup">sign up</a>
+            </li>
+            <li style="float: right">
+                <a href="/login">login</a>
+            </li>
+        </ul>
+        {% endif %}
+    </nav>
+    <button style="position: fixed; z-index: 2; left: 0; top: 100px; cursor:pointer; background:none; border: none;" onclick="history.back()">
+        <image src="{{ url_for('static', filename='/images/backinblack.svg') }}" alt="back"></image>
+    </button>
+        <div class="watchlist">         
+            {% for film in films %}
+            <div class="film-box">
+                <a href ="/{{ film[1] }}">
+                    {% set filename = '/images/thumbnails/' ~ film[1] ~ '.svg' %} 
+                    <image src="{{ url_for('static', filename=filename) }}"></image>
+                </a>
+                <form method="POST" action="{{ url_for('remove_from_watchlist', film_id = film[0], page = 'watchlist' ) }}">
+                    <button style="  
+                    width: 25%;
+                    position: absolute;
+                    max-width: 90px;
+                    min-width: 40px;
+                    top: 45%;
+                    height: auto;
+                    right: 0;
+                    transform: translateX(100%);
+                    cursor:pointer;
+                    background:none;
+                    border: none;" type="submit">
+                        <image src="{{ url_for('static', filename='images/remove.svg')}}"></image>
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    <script src="{{ url_for('static', filename='/main.js') }}"></script>
+</body>

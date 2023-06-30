@@ -1,33 +1,55 @@
 <!DOCTYPE html>
-<html lang = "en">
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='s/navbar.css') }}">
-    </head>
-    <body>
-        <ul>
-            <li style="float: left;"><a href="/">logo</a></li>
-        </ul>
-        <br><br>
-        <form method = post>
-            <fieldset>
-                <legend>Sign-Up</legend>
-                {{ form.hidden_tag() }}
-                {{ form.email.label }}
-                {{ form.email }}<br>
-                {{ form.password.label }}
-                {{ form.password }}<br>
-                {{ form.confirmPassword.label }}
-                {{ form.confirmPassword }}<br>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul>
-                        {% for message in messages %}
-                        <li> {{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% endwith %}
-                {{ form.submit }}
-            </fieldset>
-        </form>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinemore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles.css') }}">
+</head>
+<body>
+    <style>
+        body {
+            background-image: url("/static/images/studio.jpg");
+
+        }
+        </style>
+        <nav>
+            <a href="/">
+                <image src="{{ url_for('static', filename='/images/logo.svg') }}" alt="logo" class="logo"></image>
+            </a>
+            <ul class="navLinks">
+                <li style="float: right">
+                    <a href="/login">login</a>
+                </li>
+            </ul>
+        </nav>
+        <button style="position: absolute; left: 10px; top: 100px; cursor:pointer; background:none; border: none;" onclick="history.back()">
+            <image src="{{ url_for('static', filename='/images/backinblack.svg') }}" alt="back"></image>
+        </button>
+        <div class="container">
+            <div class="logform">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div>
+                        <label for="email"><b>E-mail</b></label>
+                        <input type="text" placeholder="username@domain" name="email" required><br>
+                        <label for="password"><b>Password</b></label>
+                        <input type="password" placeholder="Enter Password" name="password" required><br>
+                        <label for="confirmPassword"><b>Re-Enter Password</b></label>
+                        <input type="password" placeholder="Enter Password" name="confirmPassword" required><br>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <ul>
+                                    {% for message in messages %}
+                                        <li> {{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+                        <button type="submit">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</body>
+</html>

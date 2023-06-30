@@ -1,11 +1,23 @@
  <body>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Cinemore</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='/styles.css') }}">
+    </head>
+    <header></header>
+    <div class=results-container>
     {% for film in results %}
-        <div ><a style = "display: block;
-            color: rgb(54, 15, 231);
-            text-align: center;
-            font-size: 20px;
-            float: left;
-            padding: 20px 25px;
-            text-decoration: none;" href ="/{{ film[1] }}">{{ film[1] }}</a></div>
+        <div class="film-box">
+            <a href ="/{{ film[1] }}">
+                {% set filename = '/images/thumbnails/' ~ film[1] ~ '.svg' %} 
+                <image src="{{ url_for('static', filename=filename) }}"></image>
+            </a>
+        </div>
     {% endfor %}
+    <div class="film-box"></div>
+    <div class="film-box"></div>
+    <div class="film-box"></div>
+    <div class="film-box"></div>
+    <div class="film-box"></div>
+    </div>
 </body>

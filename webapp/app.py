@@ -3,7 +3,7 @@ from static.forms import LoginForm, SignupForm
 from flask_session import Session
 import sqlite3 as sql, difflib, random, requests
 
-DATABASE = "test.db"
+DATABASE = "database.db"
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -27,7 +27,11 @@ def edit_films():
 def browse(): 
     func = 'browse()'
     if 'id' in session:
-        return render_template('index.html', func = func, id = session['id'])
+        con = sql.connect(DATABASE)
+        cur = con.cursor()
+        cur.execute("SELECT * FROM users WHERE user_id = ?", (session['id'],))
+        account = cur.fetchone()
+        return render_template('index.html', func = func, account = account)
     else:
         return render_template('index.html', func = func)
 
@@ -94,17 +98,10 @@ def watchlist():
                     WHERE watchlist.user_id = ?
                     """, (session['id'],))
         films = cur.fetchall()
-        return render_template("watchlist.html", films = films)
+        cur.execute("SELECT * FROM users WHERE user_id = ?", (session['id'],))
+        account = cur.fetchone()
+        return render_template("watchlist.html", films = films, account=account)
     
-def get_vimeo_embed_url(video_id):
-    oembed_url = f"https://vimeo.com/api/oembed.json?url=https://vimeo.com/{video_id}"
-    response = requests.get(oembed_url)
-    if response.ok:
-        video_data = response.json()
-        return video_data["html"]
-    else:
-        return None
-
 @app.route('/<string:title>')
 def film_details(title):
     con = sql.connect(DATABASE)
@@ -112,10 +109,10 @@ def film_details(title):
     cur.execute("SELECT * FROM films WHERE title = ?", (title,))
     film = cur.fetchone()
     film_id = film[0]
-    video_url = get_vimeo_embed_url(film[5])
-    print(video_url)
     if 'id' in session:
         user_id = session['id']
+        cur.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
+        account = cur.fetchone()
         cur.execute("""
                     SELECT * FROM films 
                     JOIN watchlist ON watchlist.film_id = films.film_id 
@@ -123,11 +120,11 @@ def film_details(title):
                     WHERE users.user_id = ? AND watchlist.film_id = ?
                     """, (user_id, film_id))
         if cur.fetchone():
-            return render_template("film_details.html", film = film, video_url = video_url, id = session['id'], onwishlist = True)
+            return render_template("film_details.html", film = film, account = account, onwishlist = True)
         con.close()
-        return render_template("film_details.html", film = film, video_url = video_url, id = session['id'])
+        return render_template("film_details.html", film = film, account = account)
     con.close()
-    return render_template("film_details.html", film = film, video_url = video_url)
+    return render_template("film_details.html", film = film)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -153,7 +150,7 @@ def search_results():
     return render_template("search_results.html", results = results)
 
 @app.route('/add-to-watchlist', methods=['GET', 'POST'])
-def add_to_wishlist():
+def add_to_watchlist():
     if 'id' in session:
         film_id = request.args.get('film_id')
         con = sql.connect(DATABASE)
@@ -171,6 +168,7 @@ def add_to_wishlist():
 def remove_from_watchlist():
     if 'id' in session:
         film_id = request.args.get('film_id')
+        page = request.args.get('page')
         con = sql.connect(DATABASE)
         cur = con.cursor()
         user_id = session['id']
@@ -179,8 +177,32 @@ def remove_from_watchlist():
         cur.execute("SELECT title FROM films WHERE film_id = ?", (film_id,))
         title = cur.fetchone()[0]
         con.close()
-        return redirect(url_for("film_details", title = title))
+        if (page == 'film_details'):
+            return redirect(url_for(page, title = title))
+        return redirect(url_for(page))
     return redirect("/signup")  
+
+@app.route('/collections', methods=['GET', 'POST'])
+def collections():
+    collection = request.args.get('collection')
+    con = sql.connect(DATABASE)
+    cur = con.cursor()
+    if (collection == 'features'):
+        cur.execute("SELECT * FROM films JOIN features ON films.film_id = features.film_id")
+    if (collection == 'new_releases'):
+        cur.execute("SELECT films.* FROM films JOIN new_releases ON films.film_id = new_releases.film_id")
+    if (collection == 'short_films'):
+        cur.execute("SELECT * FROM films JOIN short_films ON films.film_id = short_films.film_id")
+    if (collection == 'student_films'):
+        cur.execute("SELECT films.* FROM films JOIN student_films ON films.film_id = student_films.film_id")
+    results = cur.fetchall()
+    if 'id' in session:
+        cur.execute("SELECT * FROM users WHERE user_id = ?", (session['id'],))
+        account = cur.fetchone()
+        con.close()
+        return render_template('collection.html', collection = collection, results = results, account = account)
+    con.close
+    return render_template('collection.html', collection = collection, results = results)
 
 @app.route('/genre-results', methods=['GET', 'POST'])
 def genre_results():
@@ -201,13 +223,14 @@ def get_user(id):
     con.close()
     return user
 
+
 def create_user(email, password):
     con = sql.connect(DATABASE)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, password TEXT)")
     cur.execute("INSERT INTO users(email, password) VALUES(?, ?)", (email, password))
     con.commit()
-    cur.execute("SELECT id FROM users WHERE email = ?", (email,))
+    cur.execute("SELECT user_id FROM users WHERE email = ?", (email,))
     user = cur.fetchone()
     con.close()
     return user

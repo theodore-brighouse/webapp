@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Cinemore</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='/styles.css') }}"> 
+        <script src="{{ url_for('static', filename='/main.js') }}"></script>
+    </head>
+        <body>
+            <header></header>
+            <nav>
+                <a href="/">
+                    <image src="{{ url_for('static', filename='/images/logo.svg') }}" alt="logo" class="logo"></image>
+                </a>
+                {% if account %}
+                <div class="dropdown">
+                    <image class="dropdown-image" src="{{ url_for('static', filename='/images/account.svg') }}">
+                    <div class="dropdown-content">
+                        <div style="padding: 8px; display: block; margin-bottom: 10px; text-decoration: underline;">{{ account[1] }}</div>
+                        <a href="/watchlist">watchlist</a>
+                        <a href="/logout">Logout</a>
+                    </div>
+                </div>
+                {% else %}
+                <ul class="navLinks">
+                    <li style="float: right">
+                        <a href="/signup">sign up</a>
+                    </li>
+                    <li style="float: right">
+                        <a href="/login">login</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </nav>
+            <div class="collection-container">
+                <button style="position: fixed; z-index: 2; left: 0; top: 100px; cursor:pointer; background:none; border: none;" onclick="history.back()">
+                    <image src="{{ url_for('static', filename='/images/backinblack.svg') }}" alt="back"></image>
+                </button>
+                {% set filename = '/images/collections/' ~ collection ~ '.svg' %}
+                <image src="{{ url_for('static', filename=filename ) }}">
+            </div>
+            <div class=results-container>
+                {% for film in results %}
+                    <div class="film-box">
+                        <a href ="/{{ film[1] }}">
+                            {% set filename = '/images/thumbnails/' ~ film[1] ~ '.svg' %} 
+                            <image src="{{ url_for('static', filename=filename) }}"></image>
+                        </a>
+                    </div>
+                {% endfor %}
+                <div class="film-box"></div>
+                <div class="film-box"></div>
+                <div class="film-box"></div>
+                <div class="film-box"></div>
+                <div class="film-box"></div>
+                </div>
+        </body>

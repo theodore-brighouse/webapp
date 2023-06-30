@@ -31,6 +31,7 @@ function genre(query) {
     // update the dropdown to equal the query
     document.getElementById("genre-dropdown").value = query;
     // remove any search feild inputs
+    document.getElementById("search-input").value = "";
     // set the url to the corrosponding genre search query
     var newURL = "genre?q=" + encodeURIComponent(query);
     window.history.replaceState({ path: newURL }, "", newURL);
@@ -64,5 +65,17 @@ function browse() {
         }
     };
     xhttp.open("POST", "browse-content", true);
+    return xhttp.send();
+}
+
+function collection(collection) {
+    var xhttp;
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("search-results").innerHTML = this.responseText;
+        }
+    };
+    xhttp.open("POST", "get-collection?collection=" + collection, true);
     return xhttp.send();
 }

@@ -1,11 +1,10 @@
-<body style="background: radial-gradient(circle, rgba(189,189,189,1) 12%, rgba(84,84,84,1) 88%); margin: 0; padding-top: 80px;">
-   <div>
-    <div style="position: relative;">
-        <img src="{{ url_for('static', filename='/images/new_releases.png') }}" alt="David Lynch" style="width:100%;height:40%;">
-    </div>
-    <div>
-        <div style="font-size:60px; font-weight: 400; color:white; font-family: 'Arya', sans-serif; padding-left: 30px; text-decoration: underline;">Collections</div>
-        <img src="https://i.pinimg.com/originals/6a/0e/6a/6a0e6a9b2b6b6b0b0b0b0b0b0b0b0b0b.jpg" alt="" style="width:100%;height:40%;">
-    </div>
-    </div>
+<body>
+    <header></header>
+    <a href="/collections?collection=new_releases"><img src="{{ url_for('static', filename='/images/new_releases.png') }}" style="width:100%;height:40%;"></a>
+    <header></header>
+    <div style="text-align: left; margin-left: 5%;">
+    <a href="/collections?collection=features"><img src="{{ url_for('static', filename='/images/collections/features.svg') }}"style="width:300px;height:auto;"></a>
+    <a href="/collections?collection=short_films"><img src="{{ url_for('static', filename='/images/collections/short_films.svg') }}" style="width:300px;height:auto;"></a>
+    <a href="/collections?collection=student_films"><img src="{{ url_for('static', filename='/images/collections/student_films.svg') }}" style="width:300px;height:auto;"></a>
+</div>
 </body>

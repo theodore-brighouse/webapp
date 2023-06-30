@@ -1,74 +1,368 @@
 body{
-  font-family: 'Arya', sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: #4E4C4C;
-  text-align: center;
   box-sizing: border-box;
+  text-align: center;
   font-size: 21px;
   text-decoration: none;
   padding: 0;
   margin: 0;
 }
 
+header {
+  width: 100%;
+  height: 74px;
+}
+
 nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  height: 70px;
+  width: 100%;
+  background-color: #4E4C4C;
   display: flex;
   justify-content: space-between;
-  padding: 12px;
-  background-color: #4E4C4C;;
+  padding: 3px 0 2px 8px;
+}
+
+.navLinks {
+  margin-right: 20px;
 }
 
 .navLinks li {
+  margin-right: 5px;
   display: inline-block;
-  padding: 0px 20px;
+  flex-grow: 1;
 }
 
 .navLinks li a {
+  text-decoration: none;
+  border: 10px solid transparent;
+  border-radius: 10px;
+  color:#fff;
   transition: all 0.3s ease 0s;
 }
 
 .navLinks li a:hover {
-  color: #6881b3;
+  color: #4E4C4C;
+  background-color: #fff;
 }
 
-.search-options {
-  flex-grow: 1;
-  margin-top: 9px;
+#search {
+  text-align: right;
+  width: 100%;
+  max-width: 550px;
 }
 
-.search-options form {
-  display: inline-block;
-}
-
-.search-options input {
-  float: left;
-  max-width: 500px;
+#search input {
+  margin-top: 13px;
+  width: 92%;
   padding: 10px;
-  background-color: #DEDEDE;
+  background-color: #fff;
   border-color: #424242;
   border-radius: 50px;
   font-size: 18px;
 }
 
-.search-options input::placeholder {
+.search input::placeholder {
   font-size: 18px;
 }
 
 .logo {
   flex-grow: 0;
+  width: 100px;
+  height: auto;
+  margin-left: 1.3vw;
 }
 
-.search-options select {
+#genre-dropdown {
   display: inline-block;
-  background-color: #DEDEDE;
+  margin-right: auto;
+  background-color: #fff;
+  border-color: #424242;
   border-radius: 50px;
   padding: 10px;
   height: 45px;
-  margin-top: 10px;
+  margin-top: 13px;
 }
 
-.titleImage{
+.tooltip {
+  visibility: hidden;
+  bottom: 60%;
+  left: -50%;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 5px 0;
+  position: absolute;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  max-height: 20%;
+}
+
+.image-header {
+  width: 100%;
+  height: auto;
+}
+
+.back-button {
+  top: 5%;
+  left: 0;
+  position: absolute;
+  cursor:pointer;
+  background:none;
+  border: none;
+}
+
+#play-button {
+  position: absolute;
+  right: 15%;
+  transform: translateY(70%);
+  bottom: 0;
+  width: 10vw;
+  max-width: 140px;
+  min-width: 80px;
+  height:auto;
+  cursor:pointer;
+  background:none ;
+  border: none;
+}
+
+.watchlist-button {
+  position: absolute;
+  transform: translateY(60%);
+  width: 5vw;
+  max-width: 90px;
+  min-width: 40px;
+  height: auto;
+  right: 8%;
+  cursor:pointer;
+  background:none;
+  border: none;
+}
+
+.watchlist-button:hover .tooltip {
+  visibility: visible;
+}
+
+.title-container {
+  width: 75%;
+  margin: 1% 0 0 2.2%;
+  height: auto;
+}
+
+.title {
+  text-align: left; 
+  color: #ffffff;
+  font-size: 30px;
+  font-size: 3.5vw;
+  font-weight: 700;
+
+}
+
+.separator {
+  margin: 1% 0 0 2%;
+  border-radius: 25%;
+  background-color: #ffffff;
+  width: 40vw;
+  height: 0.25vw;
+}
+
+.details-container {
+  text-align: left;
+  margin: 2% 0 0 2%;
+  font-weight: 500;
+  color:#fff;
+  background-color: #6881b3;
+}
+
+.description {
+  position: absolute;
+  width: 70%;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.details {
+  width: 23%;
+  position: absolute;
+  right: 1%;
+  font-size: 18px;
+}
+
+.details div {
+  margin-bottom: 8px;
+}
+
+#video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
-  background-image: url("https: //static1.colliderimages.com/wordpress/wp-content/uploads/2023/03/david-lynch-movies.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5");
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
+  display: none; /* Hide the container by default */
+  z-index: 9999; /* Ensure the container appears on top */
+}
+
+#video-container button {
+  cursor:pointer;
+  background:none;
+  border: none;
+  position: absolute;
+  right:5%;
+  top: 5%;
+  width: 2.5%;
+  height: auto;
+}
+
+#vimeo-player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.results-container {
+  margin: 3%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+.film-box {
+  display: flexbox;
+  flex: 1 0 20%;
+  text-align: left;
+  position: relative;
+  width: 25%;
+  min-width: 200px;
+  margin: 1%;
+}
+
+.watchlist {
+  margin-top: 40px;
+  margin-left: 130px;
+}
+
+.watchlist div {
+  display: flexbox;
+  flex: 1 0 20%;
+  text-align: left;
+  position: relative;
+  width: 25%;
+  min-width: 300px;
+  margin: 1%;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.dropdown {
+  text-align: right;
+  flex-grow: 1;
+  margin: 14px 5% 0 0;
+  width:30px;
+  padding-left: 5px;
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  text-align: left;
+  right:0;
+  top:43px;;
+  background-color: #fff;
+  padding: 5px;
+  width: 200px;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 4px;
+  display: none;
+  position: absolute;
+  transform: translateX(22%);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  padding: 8px;
+  display: block;
+  color:#4E4C4C;
+  text-decoration: none;
+}
+
+
+.dropdown-image:hover + .dropdown-content {
+  display: block;
+}
+
+.dropdown-content:hover {
+  display: block;
+}
+
+.dropdown-content a:hover { 
+  color:#fff;
+  background-color: #4E4C4C;
+}
+
+.logform {
+  background-color: gray;
+  padding: 20px;
+  width: 500px;
+}
+
+.logform label {
+  color: white;
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.logform input[type="text"],
+.logform input[type="password"] {
+  width: 50%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.logform button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.logform button:hover {
+  background-color: #45a049;
+}
+
+.logform ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin-bottom: 20px;
+}
+
+.logform ul li {
+  margin-bottom: 5px;
+  color: #ff0000;
 }
